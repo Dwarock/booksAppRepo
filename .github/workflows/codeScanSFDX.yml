@@ -1,19 +1,13 @@
-name: Run SFDX Scanner
-on:
-  push:
-    branches:
-      - branch1-DevLocal
+name: PMD Source Code Analyzer on Push
+
+on: [push]
+
 jobs:
-  scan-files:
+  pmd:
+  
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install SFDX CLI and Scanner
-        run: |
-          npm install --global sfdx-cli
-          sfdx --version
-          sfdx plugins install @salesforce/sfdx-scanner 
-      - name: Apex static analysis
-        run: |
-          sfdx scanner run --target "force-app" -f junit
+      - uses: sfdx-actions/setup-pmd@v1
+      - name: run-pmd
+        run: pmd -d ./force-app/main/default/classes -R category/apex/design.xml -f text
