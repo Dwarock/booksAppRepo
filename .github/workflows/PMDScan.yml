@@ -7,6 +7,16 @@ jobs:
   check-apex:
     runs-on: ubuntu-latest
     steps:
-      - name: Check APEX
-        uses: legetz/setup-pmd@v6.55
-      - run: pmd -d /force-app/main/default/classes -R category/apex/design.xml -f text
+      - name: 'Check APEX'
+        uses: actions/checkout@v2
+      - name: 'install PMD'
+        run: |
+          PMD_VERSION= cat pmd/pmd-version.txt
+          wget wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.3.0/pmd-dist-7.3.0-bin.zip
+          unzip pmd-bin-$PMD_VERSION.zip -d ~
+          my ~/pmd-bin-$PMD_VERSION ~/pmd
+          ~/pmd/bin/run.shipmd --version
+      #Run Pmd
+      - name: 'Run PMD scan'
+        run: 
+           ~/pmd/bin/run.sh pmd -d force-app -R ruleset/apex_ruleset.xml -f text
