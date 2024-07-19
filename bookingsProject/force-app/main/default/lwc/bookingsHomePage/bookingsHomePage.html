@@ -1,0 +1,89 @@
+<template>
+    <div style="background-color:burlywood;">
+       <span style="font-size:25px;"> DS Booking App </span><br/>
+         
+        <lightning-tabset variant="scoped">
+            <lightning-tab label="Stays">
+                Stays Details displays Here.
+            </lightning-tab>
+            <lightning-tab label="Flights">
+                <lightning-layout>
+                    <lightning-layout-item size="3">
+                        <lightning-input type="text" label="From" onchange={doAction1}></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="3">
+                        <lightning-input type="text" label="To" ></lightning-input>
+                    </lightning-layout-item>
+                    
+                    <lightning-layout-item size="2">
+                        <lightning-input type="date" label="Select Date" ></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="2">
+                        <lightning-input type="text" label="Select number of passengers" ></lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="2">
+                        <lightning-button label="Search" onclick={search}></lightning-button>
+                    </lightning-layout-item>
+
+                </lightning-layout>
+
+                <template for:each={flightDetails} for:item="rec">
+                    <lightning-card key={rec.Name}>
+                       
+                    </lightning-card>
+
+                </template>
+
+                
+            </lightning-tab>
+            <lightning-tab label="Car Rentals">
+                Car Details displays Here.
+            </lightning-tab>
+            <lightning-tab label="Attaction Details">
+                Attaction Details displays Here.
+            </lightning-tab>
+            <lightning-tab label="Services Manager">
+                    <lightning-input label="Enter Service Name" onchange={handleServiceNameChange} id="servicNameInput" ></lightning-input>
+                    <lightning-button label="Add" onclick={doAdd} name="addBtn"></lightning-button>
+                    <p style="color: red">
+                        you enterd Service Name is ::: {serviceName} <br/>
+                        <b>here is All service Names : {services}</b>
+                    </p>
+
+                    <template for:each={services} for:item="rec">
+                          <lightning-card key={rec}> 
+                                Service Name : {rec} 
+                          </lightning-card>  
+                    </template>
+                   
+            </lightning-tab>
+            <lightning-tab label="Customer Details">
+                
+                <template for:each={empDeatils} for:item="rec">
+                    <lightning-card key={rec.name}> 
+                        <lightning-layout>
+                            <lightning-layout-item size="3">
+                                Employee Name  <br/> {rec.name}  
+                            </lightning-layout-item>
+                            <lightning-layout-item size="3">
+                                Employee Age <br/> {rec.age}  
+                            </lightning-layout-item>
+                            <lightning-layout-item size="3">
+                                Employee Email  <br/> {rec.email} 
+                            </lightning-layout-item>
+                            <lightning-layout-item size="3">
+                                Employee Slary  <br/> {rec.salary}
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-card>  
+              </template>
+            </lightning-tab>
+        </lightning-tabset>
+    </div>
+
+   
+    
+</template>
