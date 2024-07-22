@@ -1,50 +1,29 @@
-name: PMD Static Code Analysis
-on:
-  pull_request:
-    branches:
-      - booksAppRepo
-  push:
-    branches:
-      - booksAppRepo
-  workflow_dispatch:
-
+name: Salesforce Code Analyzer Workflow
+on: push
 jobs:
-  pmd-analyser-check:
-    name: PMD Static Code Analysis
-    permissions:
-      security-events: write
-      actions: read
-      contents: read
+  salesforce-code-analyzer-workflow:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Check out files
         uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli@latest
+
+      - name: Install Salesforce Code Analyzer Plugin
+        run: sf plugins install @salesforce/sfdx-scanner@latest
+
+      - name: Run Salesforce Code Analyzer
+        id: run-code-analyzer
+        uses: forcedotcom/run-code-analyzer@v1
         with:
-          # Incremental diffs require fetch depth to be at 0 to grab the target branch
-          fetch-depth: '0'
-      - name: Run Full PMD Analysis
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        id: pmd-full-analysis
-        uses: synergy-au/pmd-analyser-action@v2.1
-        with:
-          analyse-all-code: 'true'
-          pmd-version: 'latest'
-          file-path: './src'
-          rules-path: './pmd-ruleset.xml'
-          error-rules: 'AvoidDirectAccessTriggerMap,AvoidDmlStatementsInLoops,AvoidHardcodingId'
-          note-rules: 'ApexDoc'
-      - name: Run PMD Analysis on Files Changed
-        id: pmd-partial-analysis
-        if: github.event.pull_request != null
-        uses: synergy-au/pmd-analyser-action@v2.1
-        with:
-          pmd-version: 'latest'
-          file-path: './src'
-          rules-path: './pmd-ruleset.xml'
-          error-rules: 'AvoidDirectAccessTriggerMap,AvoidDmlStatementsInLoops,AvoidHardcodingId'
-          note-rules: 'ApexDoc'
-      - name: Upload results to GitHub
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: pmd-output.sarif
-     
+          run-command: run
+          run-arguments: --normalize-severity --target . --outfile results.html
+          results-artifact-name: salesforce-code-analyzer-results
+
+      - name: Check the outputs to determine whether to fail
+        if: |
+          steps.run-code-analyzer.outputs.exit-code > 0 ||
+          steps.run-code-analyzer.outputs.num-sev1-violations > 0 ||
+          steps.run-code-analyzer.outputs.num-violations > 10
+        run: exit 1
