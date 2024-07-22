@@ -1,22 +1,14 @@
-name: validate-apex-code
-on:
-  push:
-    branches:
-      - branch1-DevLocal
+name: scan-code
+on: [push]
 jobs:
-  check-apex:
+  apex:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Check APEX'
-        uses: actions/checkout@v2
-      - name: 'install PMD'
-        run: |
-          PMD_VERSION= cat pmd/pmd-version.txt
-          wget wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.3.0/pmd-dist-7.3.0-bin.zip
-          unzip pmd-bin-$PMD_VERSION.zip -d ~
-          my ~/pmd-bin-$PMD_VERSION ~/pmd
-          ~/pmd/bin/run.shipmd --version
-      #Run Pmd
-      - name: 'Run PMD scan'
-        run: 
-           ~/pmd/bin/run.sh pmd -d force-app -R ruleset/apex_ruleset.xml -f text
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Setup PMD
+      uses: legetz/setup-pmd@7.1.0
+    - name: APEX full scan for design rules only
+      run: pmd check --dir ./force-app/main/default/classes -R rulesets/apex_ruleset.xml -f text
