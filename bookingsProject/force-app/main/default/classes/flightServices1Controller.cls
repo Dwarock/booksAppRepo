@@ -10,5 +10,11 @@ public with sharing class flightServices1Controller {
 		list<account> accounts = [SELECT Id,Name FROM account];
 		return flightsList;
 	}
+	
+	@AuraEnabled
+	Public static list<account> getContacts(){
+		list<account> accounts = [SELECT Id,Name FROM account];
+		return flightsList;
+	}
     
 }
